@@ -22,10 +22,10 @@ class Fib extends Component {
         const seenIndexes = await axios.get('/api/values/all');
         this.setState({
             seenIndexes: seenIndexes.data
-        })
+        });
     }
 
-    handleSubmit = (event) => {
+    handleSubmit = async event => {
         event.preventDefault();
 
         await axios.post('/api/values', {
