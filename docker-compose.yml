@@ -5,7 +5,15 @@ services:
     image: 'postgres:latest' #from hub.docker.com
   redis:
     image: 'redis:latest'
-  server:
+  nginx:
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports: 
+      - '3050:80'
+
+  api:
     build:
       dockerfile: Dockerfile.dev #just specifying the name without the path 
       context: ./server #current working directory
@@ -20,18 +28,23 @@ services:
       - PGDATABASE=postgres
       - PGPASSWORD=postgres_password # from docker hub
       - PGPORT=5432 # 
+
   client:
     build:
       dockerfile: Dockerfile.dev
       context: ./client
-      volumes: 
-        - /app/node_modules
-        - ./client:/app
+    volumes: 
+      - /app/node_modules
+      - ./client:/app
+
   worker:
     build:
       dockerfile: Dockerfile.dev
-      context: ./client
-      volumes: 
-        - /app/node_modules
-        - ./worker:/app
-        
+      context: ./worker
+    volumes: 
+      - /app/node_modules
+      - ./worker:/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379 # from hub.docker.com 
+    restart: always
