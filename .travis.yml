@@ -1,0 +1,24 @@
+sudo: required
+services:
+  - docker
+
+before_install: 
+  - docker build -t eugocker/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run eugocker/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t eugocker/fibseq-client ./client
+  - docker build -t eugocker/fibseq-nginx ./nginx
+  - docker build -t eugocker/fibseq-server ./server
+  - docker build -t eugocker/fibseq-worker ./worker
+
+  # log in to the docker cli
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+
+  # take those images and push them to the docker hub
+  - docker push eugocker/fibseq-client
+  - docker push eugocker/fibseq-nginx
+  - docker push eugocker/fibseq-server
+  - docker push eugocker/fibseq-worker
