@@ -1,0 +1,9 @@
+FROM node:alpine
+WORKDIR "/app"
+COPY ./package.json ./
+RUN npm install
+COPY . .
+
+# "dev" refers to dev: nodemon script in package.json
+
+CMD ["npm", "run", "dev"]
