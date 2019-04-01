@@ -15,6 +15,8 @@ after_success:
   - docker build -t eugocker/fibseq-worker ./worker
 
   # log in to the docker cli
+  # send username and password as plain text as if we login
+  # to docker from the console using encypted variables inside a travis env.
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 
   # take those images and push them to the docker hub
