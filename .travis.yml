@@ -15,6 +15,8 @@ after_success:
   - docker build -t eugocker/fibseq-worker ./worker
 
   # log in to the docker cli
+  # send username and password as plain text as if we login
+  # to docker from the console using encypted variables inside a travis env.
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 
   # take those images and push them to the docker hub
@@ -22,3 +24,18 @@ after_success:
   - docker push eugocker/fibseq-nginx
   - docker push eugocker/fibseq-server
   - docker push eugocker/fibseq-worker
+
+deploy:
+  provider: elasticbeanstalk
+  region: us-east-2
+  app: multi-docker
+  env: MultiDocker-env
+  # aws services -> s3 -> Buckets
+  bucket_name: elasticbeanstalk-us-east-2-245436128165
+  # path?
+  bucket_path: docker-multi
+  on: 
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: 
+    secure: $AWS_SECRET_KEY
